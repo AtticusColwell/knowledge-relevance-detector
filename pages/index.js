@@ -56,7 +56,7 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label htmlFor="primaryText" className="block text-sm font-medium text-gray-700 mb-2">
-                  Primary Person's Knowledge (What they know)
+                  Primary Person&apos;s Knowledge (What they know)
                 </label>
                 <textarea
                   id="primaryText"
@@ -71,7 +71,7 @@ export default function Home() {
               
               <div>
                 <label htmlFor="secondaryText" className="block text-sm font-medium text-gray-700 mb-2">
-                  Secondary Person's Knowledge (What they know)
+                  Secondary Person&apos;s Knowledge (What they know)
                 </label>
                 <textarea
                   id="secondaryText"
