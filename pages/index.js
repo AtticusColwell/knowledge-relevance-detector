@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import Head from 'next/head';
-import { calculateRelevance } from '../utils/simpleRelevanceAlgorithm';
 import RelevanceVisualizer from '../components/RelevanceVisualizer';
 import SampleData from '../components/SampleData';
 
@@ -9,21 +8,51 @@ export default function Home() {
   const [secondaryText, setSecondaryText] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [primaryEntities, setPrimaryEntities] = useState([]);
+  const [secondaryEntities, setSecondaryEntities] = useState([]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     
     try {
-      const relevanceResult = await calculateRelevance(primaryText, secondaryText);
-      setResult(relevanceResult);
+      // Call the API route instead of directly using the functions
+      const response = await fetch('/api/calculate-relevance', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          primaryText,
+          secondaryText
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to calculate relevance');
+      }
+      
+      const data = await response.json();
+      
+      // Set state with the API response
+      setResult(data.result);
+      setPrimaryEntities(data.primaryEntities);
+      setSecondaryEntities(data.secondaryEntities);
     } catch (error) {
       console.error('Error calculating relevance:', error);
       setResult({ 
         isRelevant: false, 
         score: 0, 
-        explanation: 'An error occurred while processing your request.' 
+        explanation: `An error occurred: ${error.message}`,
+        components: {
+          keywordOverlap: 0,
+          entityOverlap: 0,
+          semanticSimilarity: 0
+        }
       });
+      setPrimaryEntities([]);
+      setSecondaryEntities([]);
     } finally {
       setLoading(false);
     }
@@ -33,8 +62,11 @@ export default function Home() {
     setPrimaryText(primary);
     setSecondaryText(secondary);
     setResult(null);
+    setPrimaryEntities([]);
+    setSecondaryEntities([]);
   };
 
+  // Rest of your component remains the same
   return (
     <div className="min-h-screen bg-gray-100">
       <Head>
@@ -44,15 +76,16 @@ export default function Home() {
       </Head>
 
       <main className="container mx-auto px-4 py-8">
+        {/* Component content stays the same */}
         <h1 className="text-3xl font-bold text-center mb-8">
           Knowledge Relevance Detector
         </h1>
         
         <div className="bg-white p-6 rounded-lg shadow-md">
-          {/* Add Sample Data Component */}
           <SampleData onApplySample={handleApplySample} />
           
           <form onSubmit={handleSubmit}>
+            {/* Form content stays the same */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label htmlFor="primaryText" className="block text-sm font-medium text-gray-700 mb-2">
@@ -91,7 +124,7 @@ export default function Home() {
                 disabled={loading}
                 className="px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
               >
-                {loading ? 'Analyzing...' : 'Analyze Relevance'}
+                {loading ? 'Analyzing with AI...' : 'Analyze Relevance'}
               </button>
             </div>
           </form>
@@ -119,15 +152,18 @@ export default function Home() {
                 )}
               </div>
               
-              {/* Add the Visualization Component */}
-              <RelevanceVisualizer result={result} />
+              <RelevanceVisualizer 
+                result={result} 
+                primaryEntities={primaryEntities}
+                secondaryEntities={secondaryEntities}
+              />
             </div>
           )}
         </div>
       </main>
 
       <footer className="container mx-auto px-4 py-6 text-center text-gray-500 text-sm">
-        Atticus Colwell &copy; {new Date().getFullYear()}
+        &copy; {new Date().getFullYear()} Knowledge Relevance Detector
       </footer>
     </div>
   );
