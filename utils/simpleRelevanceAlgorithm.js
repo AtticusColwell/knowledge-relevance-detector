@@ -1,9 +1,4 @@
 /**
- * Simple Relevance Detection Algorithm
- * Browser-compatible version without Node.js dependencies
- */
-
-/**
  * Calculate relevance between primary and secondary person's knowledge
  * @param {string} primaryText - Text representing what the primary person knows
  * @param {string} secondaryText - Text representing what the secondary person knows
@@ -50,7 +45,7 @@ export async function calculateRelevance(primaryText, secondaryText) {
    * @param {string} text - Input text
    * @returns {Array} - Array of keywords
    */
-  function extractKeywords(text) {
+  export function extractKeywords(text) {
     // Convert to lowercase and remove punctuation
     const cleanText = text.toLowerCase().replace(/[^\w\s]/g, '');
     
@@ -91,7 +86,7 @@ export async function calculateRelevance(primaryText, secondaryText) {
    * @param {string} text - Input text
    * @returns {Array} - Array of potential entities
    */
-  function extractSimpleEntities(text) {
+  export function extractSimpleEntities(text) {
     const entities = [];
     
     // Extract capitalized phrases (potential proper nouns)
@@ -120,7 +115,7 @@ export async function calculateRelevance(primaryText, secondaryText) {
    * @param {Array} array2 - Second array
    * @returns {number} - Overlap score (0-1)
    */
-  function calculateOverlap(array1, array2) {
+  export function calculateOverlap(array1, array2) {
     if (array1.length === 0 || array2.length === 0) return 0;
     
     // Convert to lowercase for case-insensitive comparison
@@ -146,7 +141,7 @@ export async function calculateRelevance(primaryText, secondaryText) {
    * @param {number} relevanceScore - Final relevance score
    * @returns {string} - Explanation text
    */
-  function generateExplanation(
+  export function generateExplanation(
     primaryKeywords,
     secondaryKeywords,
     primaryEntities,
@@ -157,36 +152,36 @@ export async function calculateRelevance(primaryText, secondaryText) {
   ) {
     // Find shared keywords
     const sharedKeywords = primaryKeywords.filter(keyword => 
-      secondaryKeywords.includes(keyword)
-    );
-    
-    // Find shared entities
-    const sharedEntities = primaryEntities.filter(entity =>
-      secondaryEntities.some(secEntity => 
-        secEntity.toLowerCase() === entity.toLowerCase()
-      )
-    );
-    
-    let explanation = '';
-    
-    if (relevanceScore > 0.7) {
-      explanation = 'High relevance detected. ';
-    } else if (relevanceScore > 0.3) {
-      explanation = 'Moderate relevance detected. ';
-    } else {
-      explanation = 'Low relevance detected. ';
-    }
-    
-    if (sharedEntities.length > 0) {
-      explanation += `Both texts mention the same entities: ${sharedEntities.slice(0, 5).join(', ')}${sharedEntities.length > 5 ? '...' : ''}. `;
-    }
-    
-    if (sharedKeywords.length > 0) {
-      explanation += `Both texts share keywords related to: ${sharedKeywords.slice(0, 7).join(', ')}${sharedKeywords.length > 7 ? '...' : ''}. `;
-    }
-    
-    explanation += `Entity overlap: ${(entityOverlap * 100).toFixed(1)}%. `;
-    explanation += `Keyword similarity: ${(keywordOverlap * 100).toFixed(1)}%.`;
-    
-    return explanation;
+        secondaryKeywords.includes(keyword)
+      );
+      
+      // Find shared entities
+      const sharedEntities = primaryEntities.filter(entity =>
+        secondaryEntities.some(secEntity => 
+          secEntity.toLowerCase() === entity.toLowerCase()
+        )
+      );
+      
+      let explanation = '';
+      
+      if (relevanceScore > 0.7) {
+        explanation = 'High relevance detected. ';
+      } else if (relevanceScore > 0.3) {
+        explanation = 'Moderate relevance detected. ';
+      } else {
+        explanation = 'Low relevance detected. ';
+      }
+      
+      if (sharedEntities.length > 0) {
+        explanation += `Both texts mention the same entities: ${sharedEntities.slice(0, 5).join(', ')}${sharedEntities.length > 5 ? '...' : ''}. `;
+      }
+      
+      if (sharedKeywords.length > 0) {
+        explanation += `Both texts share keywords related to: ${sharedKeywords.slice(0, 7).join(', ')}${sharedKeywords.length > 7 ? '...' : ''}. `;
+      }
+      
+      explanation += `Entity overlap: ${(entityOverlap * 100).toFixed(1)}%. `;
+      explanation += `Keyword similarity: ${(keywordOverlap * 100).toFixed(1)}%.`;
+      
+      return explanation;
   }

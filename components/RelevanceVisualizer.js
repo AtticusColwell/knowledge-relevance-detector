@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 
-const RelevanceVisualizer = ({ result, primaryEntities, secondaryEntities }) => {
+const RelevanceVisualizer = ({ 
+  result, 
+  primaryEntities, 
+  secondaryEntities,
+  showSemanticSimilarity = true // New prop to control display
+}) => {
   const [sharedEntities, setSharedEntities] = useState([]);
   const [sharedKeywords, setSharedKeywords] = useState([]);
   const [uniquePrimaryEntities, setUniquePrimaryEntities] = useState([]);
@@ -100,7 +105,7 @@ const RelevanceVisualizer = ({ result, primaryEntities, secondaryEntities }) => 
       <div className="mt-6 bg-gray-50 p-4 rounded-md">
         <h4 className="font-medium mb-2">Relevance Metrics</h4>
         <div className="flex justify-between">
-          <div className="w-1/3">
+          <div className={showSemanticSimilarity ? "w-1/3" : "w-1/2"}>
             <p className="text-sm mb-1">Entity Overlap</p>
             <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
               <div 
@@ -111,7 +116,7 @@ const RelevanceVisualizer = ({ result, primaryEntities, secondaryEntities }) => 
             <p className="text-xs text-right mt-1">{((result.components?.entityOverlap || 0) * 100).toFixed(1)}%</p>
           </div>
           
-          <div className="w-1/3 mx-2">
+          <div className={showSemanticSimilarity ? "w-1/3 mx-2" : "w-1/2 ml-2"}>
             <p className="text-sm mb-1">Keyword Similarity</p>
             <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
               <div 
@@ -122,16 +127,18 @@ const RelevanceVisualizer = ({ result, primaryEntities, secondaryEntities }) => 
             <p className="text-xs text-right mt-1">{((result.components?.keywordOverlap || 0) * 100).toFixed(1)}%</p>
           </div>
           
-          <div className="w-1/3">
-            <p className="text-sm mb-1">Semantic Similarity</p>
-            <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-purple-600 rounded-full" 
-                style={{ width: `${(result.components?.semanticSimilarity || 0) * 100}%` }}
-              />
+          {showSemanticSimilarity && (
+            <div className="w-1/3">
+              <p className="text-sm mb-1">Semantic Similarity</p>
+              <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-purple-600 rounded-full" 
+                  style={{ width: `${(result.components?.semanticSimilarity || 0) * 100}%` }}
+                />
+              </div>
+              <p className="text-xs text-right mt-1">{((result.components?.semanticSimilarity || 0) * 100).toFixed(1)}%</p>
             </div>
-            <p className="text-xs text-right mt-1">{((result.components?.semanticSimilarity || 0) * 100).toFixed(1)}%</p>
-          </div>
+          )}
         </div>
         
         <div className="mt-4">
@@ -140,7 +147,7 @@ const RelevanceVisualizer = ({ result, primaryEntities, secondaryEntities }) => 
             <div 
               className={`h-full rounded-full ${
                 result.score > 0.7 ? 'bg-green-600' : 
-                result.score > 0.35 ? 'bg-yellow-500' : 'bg-red-500'
+                result.score > (showSemanticSimilarity ? 0.35 : 0.3) ? 'bg-yellow-500' : 'bg-red-500'
               }`}
               style={{ width: `${result.score * 100}%` }}
             />

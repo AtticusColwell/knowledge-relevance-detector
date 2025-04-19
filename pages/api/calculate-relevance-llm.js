@@ -1,7 +1,6 @@
 import { calculateRelevance, extractSimpleEntities } from '../../utils/llmEnhancedRelevanceAlgorithm';
 
 export default async function handler(req, res) {
-  // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -9,7 +8,6 @@ export default async function handler(req, res) {
   try {
     const { primaryText, secondaryText } = req.body;
     
-    // Validate input
     if (!primaryText || !secondaryText) {
       return res.status(400).json({ error: 'Both primaryText and secondaryText are required' });
     }
@@ -28,7 +26,6 @@ export default async function handler(req, res) {
     // Calculate relevance
     const result = await calculateRelevance(primaryText, secondaryText, apiKey);
     
-    // Return both the result and the extracted entities
     return res.status(200).json({ 
       result,
       primaryEntities,

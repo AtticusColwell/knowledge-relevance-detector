@@ -10,14 +10,17 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [primaryEntities, setPrimaryEntities] = useState([]);
   const [secondaryEntities, setSecondaryEntities] = useState([]);
+  const [useLLM, setUseLLM] = useState(true); // Toggle state
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     
     try {
-      // Call the API route instead of directly using the functions
-      const response = await fetch('/api/calculate-relevance', {
+      // Call the appropriate API route based on toggle
+      const endpoint = useLLM ? '/api/calculate-relevance-llm' : '/api/calculate-relevance-simple';
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -48,7 +51,7 @@ export default function Home() {
         components: {
           keywordOverlap: 0,
           entityOverlap: 0,
-          semanticSimilarity: 0
+          semanticSimilarity: useLLM ? 0 : undefined // Only include semanticSimilarity if LLM is used
         }
       });
       setPrimaryEntities([]);
@@ -66,7 +69,6 @@ export default function Home() {
     setSecondaryEntities([]);
   };
 
-  // Rest of your component remains the same
   return (
     <div className="min-h-screen bg-gray-100">
       <Head>
@@ -76,16 +78,42 @@ export default function Home() {
       </Head>
 
       <main className="container mx-auto px-4 py-8">
-        {/* Component content stays the same */}
         <h1 className="text-3xl font-bold text-center mb-8">
           Knowledge Relevance Detector
         </h1>
         
         <div className="bg-white p-6 rounded-lg shadow-md">
+          {/* Toggle switch for LLM/Simple algorithm */}
+          <div className="flex justify-end mb-4">
+            <div className="flex items-center">
+              <span className={`mr-2 text-sm ${!useLLM ? 'font-bold text-blue-600' : 'text-gray-500'}`}>
+                Simple
+              </span>
+              <div className="relative inline-block w-12 mr-2 align-middle select-none">
+                <input
+                  type="checkbox"
+                  id="toggle"
+                  checked={useLLM}
+                  onChange={() => setUseLLM(!useLLM)}
+                  className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
+                />
+                <label
+                  htmlFor="toggle"
+                  className={`toggle-label block overflow-hidden h-6 rounded-full cursor-pointer ${
+                    useLLM ? 'bg-blue-600' : 'bg-gray-300'
+                  }`}
+                ></label>
+              </div>
+              <span className={`text-sm ${useLLM ? 'font-bold text-blue-600' : 'text-gray-500'}`}>
+                AI-Enhanced
+              </span>
+            </div>
+          </div>
+          
+          {/* Sample Data Component */}
           <SampleData onApplySample={handleApplySample} />
           
           <form onSubmit={handleSubmit}>
-            {/* Form content stays the same */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label htmlFor="primaryText" className="block text-sm font-medium text-gray-700 mb-2">
@@ -124,7 +152,7 @@ export default function Home() {
                 disabled={loading}
                 className="px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
               >
-                {loading ? 'Analyzing with AI...' : 'Analyze Relevance'}
+                {loading ? `Analyzing${useLLM ? ' with AI' : ''}...` : `Analyze Relevance${useLLM ? ' with AI' : ''}`}
               </button>
             </div>
           </form>
@@ -132,12 +160,21 @@ export default function Home() {
           {result && (
             <div className="mt-8">
               <div className={`p-4 rounded-md ${result.isRelevant ? 'bg-green-50 border border-green-200' : 'bg-yellow-50 border border-yellow-200'}`}>
-                <h2 className="text-xl font-semibold mb-2">
-                  Result: {result.isRelevant ? 'Relevant' : 'Not Relevant'}
-                </h2>
-                <p className="mb-2">
-                  <span className="font-medium">Relevance Score:</span> {(result.score * 100).toFixed(1)}%
-                </p>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h2 className="text-xl font-semibold mb-2">
+                      Result: {result.isRelevant ? 'Relevant' : 'Not Relevant'}
+                    </h2>
+                    <p className="mb-2">
+                      <span className="font-medium">Relevance Score:</span> {(result.score * 100).toFixed(1)}%
+                    </p>
+                  </div>
+                  {useLLM && (
+                    <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold">
+                      AI-Enhanced
+                    </div>
+                  )}
+                </div>
                 <div>
                   <span className="font-medium">Explanation:</span>
                   <p className="mt-1">{result.explanation}</p>
@@ -152,10 +189,12 @@ export default function Home() {
                 )}
               </div>
               
+              {/* Pass entities to the Visualization Component */}
               <RelevanceVisualizer 
                 result={result} 
                 primaryEntities={primaryEntities}
                 secondaryEntities={secondaryEntities}
+                showSemanticSimilarity={useLLM}
               />
             </div>
           )}
@@ -165,6 +204,24 @@ export default function Home() {
       <footer className="container mx-auto px-4 py-6 text-center text-gray-500 text-sm">
         &copy; {new Date().getFullYear()} Knowledge Relevance Detector
       </footer>
+      
+      {/* CSS for toggle switch */}
+      <style jsx>{`
+        .toggle-checkbox:checked {
+          right: 0;
+          border-color: #ffffff;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+          background-color: #3b82f6;
+        }
+        .toggle-checkbox {
+          left: 0;
+          transition: all 0.3s;
+        }
+        .toggle-label {
+          transition: background-color 0.3s;
+        }
+      `}</style>
     </div>
   );
 }
