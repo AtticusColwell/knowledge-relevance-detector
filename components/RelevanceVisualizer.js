@@ -52,7 +52,7 @@ const RelevanceVisualizer = ({
       
       <div className="flex justify-between items-start">
         <div className="w-1/3 bg-blue-50 p-4 rounded-md">
-          <h4 className="font-medium text-blue-800 mb-2">Primary Person's Unique Knowledge</h4>
+          <h4 className="font-medium text-blue-800 mb-2">Primary Person&apos;s Unique Knowledge</h4>
           <ul className="list-disc pl-5">
             {uniquePrimaryEntities.map((entity, index) => (
               <li key={`primary-${index}`} className="text-sm mb-1">{entity}</li>
@@ -90,7 +90,7 @@ const RelevanceVisualizer = ({
         </div>
         
         <div className="w-1/3 bg-green-50 p-4 rounded-md">
-          <h4 className="font-medium text-green-800 mb-2">Secondary Person's Unique Knowledge</h4>
+          <h4 className="font-medium text-green-800 mb-2">Secondary Person&apos;s Unique Knowledge</h4>
           <ul className="list-disc pl-5">
             {uniqueSecondaryEntities.map((entity, index) => (
               <li key={`secondary-${index}`} className="text-sm mb-1">{entity}</li>
@@ -160,7 +160,7 @@ const RelevanceVisualizer = ({
         <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
           <p className="text-sm">
             <span className="font-bold">Recommendation:</span> The information from the primary person 
-            should be shared with the secondary person as it's relevant to their work context.
+            should be shared with the secondary person as it&apos;s relevant to their work context.
           </p>
         </div>
       )}

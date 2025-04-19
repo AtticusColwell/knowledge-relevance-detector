@@ -10,14 +10,14 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [primaryEntities, setPrimaryEntities] = useState([]);
   const [secondaryEntities, setSecondaryEntities] = useState([]);
-  const [useLLM, setUseLLM] = useState(true); // Toggle state
+  const [useLLM, setUseLLM] = useState(true); // State for algorithm selection
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     
     try {
-      // Call the appropriate API route based on toggle
+      // Call the appropriate API route based on selected algorithm
       const endpoint = useLLM ? '/api/calculate-relevance-llm' : '/api/calculate-relevance-simple';
       
       const response = await fetch(endpoint, {
@@ -83,30 +83,32 @@ export default function Home() {
         </h1>
         
         <div className="bg-white p-6 rounded-lg shadow-md">
-          {/* Toggle switch for LLM/Simple algorithm */}
-          <div className="flex justify-end mb-4">
-            <div className="flex items-center">
-              <span className={`mr-2 text-sm ${!useLLM ? 'font-bold text-blue-600' : 'text-gray-500'}`}>
+          {/* Algorithm selection buttons */}
+          <div className="flex justify-end mb-4 items-center">
+            <span className="text-sm font-medium text-gray-700 mr-2">Choose Algorithm:</span>
+            <div className="inline-flex rounded-md shadow-sm" role="group">
+              <button
+                type="button"
+                onClick={() => setUseLLM(false)}
+                className={`px-4 py-2 text-sm font-medium rounded-l-lg ${
+                  !useLLM 
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                } border border-gray-300`}
+              >
                 Simple
-              </span>
-              <div className="relative inline-block w-12 mr-2 align-middle select-none">
-                <input
-                  type="checkbox"
-                  id="toggle"
-                  checked={useLLM}
-                  onChange={() => setUseLLM(!useLLM)}
-                  className="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"
-                />
-                <label
-                  htmlFor="toggle"
-                  className={`toggle-label block overflow-hidden h-6 rounded-full cursor-pointer ${
-                    useLLM ? 'bg-blue-600' : 'bg-gray-300'
-                  }`}
-                ></label>
-              </div>
-              <span className={`text-sm ${useLLM ? 'font-bold text-blue-600' : 'text-gray-500'}`}>
+              </button>
+              <button
+                type="button"
+                onClick={() => setUseLLM(true)}
+                className={`px-4 py-2 text-sm font-medium rounded-r-lg ${
+                  useLLM 
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                } border border-gray-300`}
+              >
                 AI-Enhanced
-              </span>
+              </button>
             </div>
           </div>
           
@@ -204,24 +206,6 @@ export default function Home() {
       <footer className="container mx-auto px-4 py-6 text-center text-gray-500 text-sm">
         &copy; {new Date().getFullYear()} Knowledge Relevance Detector
       </footer>
-      
-      {/* CSS for toggle switch */}
-      <style jsx>{`
-        .toggle-checkbox:checked {
-          right: 0;
-          border-color: #ffffff;
-        }
-        .toggle-checkbox:checked + .toggle-label {
-          background-color: #3b82f6;
-        }
-        .toggle-checkbox {
-          left: 0;
-          transition: all 0.3s;
-        }
-        .toggle-label {
-          transition: background-color 0.3s;
-        }
-      `}</style>
     </div>
   );
 }
